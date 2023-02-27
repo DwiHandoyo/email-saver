@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres
+    container_name: posgresql_db
+    restart: always
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=developer
+      - POSTGRES_PASSWORD=sotoAy4m
+    ports:
+      - '5434:5434'
+
+  flask:
+    container_name: flask
+    build: .
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgis_simada}
+      - POSTGRES_PORT=${POSTGRES_PORT:-3011}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    depends_on:
+      - postgres
+    restart: always
+    ports:
+      - "5000:5000"
