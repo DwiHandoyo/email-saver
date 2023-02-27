@@ -15,10 +15,10 @@ services:
 
   flask:
     container_name: flask
-    build: .
+    image: dwihandoyo/email-saver:latest
     environment:
-      - POSTGRES_HOST=${POSTGRES_HOST:-postgis_simada}
-      - POSTGRES_PORT=${POSTGRES_PORT:-3011}
+      - POSTGRES_HOST
+      - POSTGRES_PORT
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
@@ -27,3 +27,10 @@ services:
     restart: always
     ports:
       - "5000:5000"
+
+  cron:
+    container_name: cron
+    build: cron/.
+    depends_on:
+      - fastapi
+    restart: always

@@ -1,3 +1,5 @@
+import pika
+
 from datetime import datetime, timezone, timedelta
 
 from app.main import db
@@ -12,6 +14,7 @@ def save_new_email(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
         time_stamp=f'{datetime.now(timezone(timedelta(hours=+8))):%Y-%m-%d %H:%M}'
     )
     save_changes(new_email)
+    # sendQueue(json.dumps(data))
     response_object = {
         'status': 'succes',
         'message': 'email saved'
@@ -29,4 +32,14 @@ def get_an_email(event_id):
 def save_changes(data: Email) -> None:
     db.session.add(data)
     db.session.commit()
+
+def sendQueue(data):
+    connection = pika.BlockingConnection(
+    pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='email')
+
+    channel.basic_publish(exchange='', routing_key='email', body=data)
+    connection.close()
 
